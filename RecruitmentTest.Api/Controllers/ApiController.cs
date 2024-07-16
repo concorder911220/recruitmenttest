@@ -27,4 +27,11 @@ public class ApiController : ControllerBase
         var response = await _marketAssetsService.GetProvidersAsync();
         return Results.Json(response);
     }
+    
+    [HttpGet("instruments")]
+    public async Task<IResult> GetInstruments([FromQuery] string provider, [FromQuery] string kind)
+    {
+        var response = await _marketAssetsService.GetInstrumentsAsync(provider, kind);
+        return Results.Json(response);
+    }
 }

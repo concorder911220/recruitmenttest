@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
 using RecruitmentTest.Common;
 
@@ -23,7 +24,7 @@ public class MarketAssetsService
         var credentials = await _authService.GetCredentialsAsync();
 
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get,
-            $"{_options.Value.URI}$/api/instruments/v1/instruments/kinds/");
+            new Uri($"{_options.Value.URI}/api/instruments/v1/instruments/kinds/"));
 
         httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credentials.AccessToken);
         
@@ -48,6 +49,21 @@ public class MarketAssetsService
         return providers!;
     }
 
+    public async Task<InstrumentsListResponse> GetInstrumentsAsync(string provider, string kind)
+    {
+        var credentials = await _authService.GetCredentialsAsync();
+        
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get,
+            $"{_options.Value.URI}/api/instruments/v1/instruments?provider={provider}&kind={kind}");
+
+        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credentials.AccessToken);
+        
+        var response = await SendRequestAsync(httpRequestMessage);
+        var instruments = await response.Content.ReadFromJsonAsync<InstrumentsListResponse>();
+
+        return instruments!;
+    }
+    
     private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage httpRequestMessage)
     {
         using var client = _httpClientFactory.CreateClient();
@@ -64,10 +80,15 @@ public class KindsListResponse
 
 public class ProvidersListResponse
 {
-    public List<ProviderResponse>? Data { get; set; }
+    public List<string>? Data { get; set; }
 }
 
-public class ProviderResponse
+public class InstrumentsListResponse
+{
+    public List<InstrumentResponse>? Data { get; set; }
+}
+
+public class InstrumentResponse
 {
     public Guid Id { get; set; }
     public string? Symbol { get; set; }
@@ -76,7 +97,7 @@ public class ProviderResponse
     public double TickSize { get; set; }
     public string? Currency { get; set; }
     public string? BaseCurrency { get; set; }
-    public Dictionary<string, MappingResponse>? Mappings;
+    public Dictionary<string, MappingResponse>? Mappings { get; set; }
 }
 
 public class MappingResponse
