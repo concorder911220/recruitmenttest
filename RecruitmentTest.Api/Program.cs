@@ -27,4 +27,12 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 
+var dbContext = app.Services.GetRequiredService<AppDbContext>();
+
+
 app.Run();
+
+// private void UpdateDbTables(AppDbContext dbContext)
+// {
+//     
+// }
