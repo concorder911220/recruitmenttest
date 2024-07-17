@@ -2,6 +2,9 @@
 2. docker-compose build
 3. docker-compose up
 
+   As starting project, all assets data are saved to inmomory database by fintacharts platform api.
+   I am using test credentials which you can find on appsettings.json.
+
    Here are swagger docs for rest api. http://localhost:5190/swagger/index.html
 
    ![image](https://github.com/user-attachments/assets/8be216d6-51e7-40ed-b66e-048513d7fa32)
