@@ -87,7 +87,7 @@ public class ApiController : ControllerBase
         [Required]
         string provider, 
         [FromQuery]
-        [DefaultValue(1)]
+        [DefaultValue(30)]
         [Required]
         int interval, 
         [FromQuery]
@@ -95,12 +95,14 @@ public class ApiController : ControllerBase
         [Required]
         string periodicity, 
         [FromQuery]
-        [DefaultValue("2024-07-07")]
+        [DefaultValue("2024-07-16")]
         [Required]
-        string startDate
+        string startDate,
+        [FromQuery]
+        string? endDate
     )
     {
-        var response = await _marketAssetsService.GetDateRangeAsync(instrumentId, provider, interval, periodicity, startDate);
+        var response = await _marketAssetsService.GetDateRangeAsync(instrumentId, provider, interval, periodicity, startDate, endDate);
         return Results.Json(response);
     }
 }

@@ -104,19 +104,46 @@ public class MarketAssetsService
         return countBack!;
     }
 
-    public async Task<CountBackListResponse> GetDateRangeAsync(string instrumentId, string provider, int interval, string periodicity, string startDate)
+    public async Task<CountBackListResponse> GetDateRangeAsync(string instrumentId, string provider, int interval, string periodicity, string startDate, string? endDate)
     {
-        var credentials = await _authService.GetCredentialsAsync();
+        try
+        {
+            var credentials = await _authService.GetCredentialsAsync();
 
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get,
-            $"{_options.Value.URI}/api/bars/v1/bars/date-range?instrumentId={instrumentId}&provider={provider}&interval={interval}&periodicity={periodicity}&startDate={startDate}");
+            var queryParams = new List<string>
+        {
+            $"instrumentId={instrumentId}",
+            $"provider={provider}",
+            $"interval={interval}",
+            $"periodicity={periodicity}",
+            $"startDate={startDate}"
+        };
 
-        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credentials.AccessToken);
+            if (!string.IsNullOrEmpty(endDate))
+            {
+                queryParams.Add($"endDate={endDate}");
+            }
 
-        var response = await SendRequestAsync(httpRequestMessage);
-        var dateRange = await response.Content.ReadFromJsonAsync<CountBackListResponse>();
+            var queryString = string.Join("&", queryParams);
+            var requestUri = $"{_options.Value.URI}/api/bars/v1/bars/date-range?{queryString}";
 
-        return dateRange!;
+            // Add logging to debug the constructed URL
+            Console.WriteLine($"Request URI: {requestUri}");
+
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credentials.AccessToken);
+
+            var response = await SendRequestAsync(httpRequestMessage);
+            var dateRange = await response.Content.ReadFromJsonAsync<CountBackListResponse>();
+
+            return dateRange!;
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+            Console.WriteLine($"Error: {ex.Message}");
+            throw;
+        }
     }
 
     private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage httpRequestMessage)
