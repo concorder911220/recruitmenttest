@@ -21,18 +21,18 @@ var app = builder.Build();
 
 // if (app.Environment.IsDevelopment())
 // {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 // }
+
+app.UseWebSockets();
 
 app.MapControllers();
 
-//var dbContext = app.Services.GetRequiredService<AppDbContext>();
-
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+    await seeder.SeedAll();
+}
 
 app.Run();
-
-// private void UpdateDbTables(AppDbContext dbContext)
-// {
-//     
-// }

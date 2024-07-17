@@ -11,6 +11,7 @@ public static class Entry
         {
             options.UseInMemoryDatabase("RecruitmentTestDatabase");
         });
+        services.AddScoped<DataSeeder>();
         return services;
     }
 }

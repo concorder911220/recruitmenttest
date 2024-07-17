@@ -11,4 +11,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RecruitmentTask.Domain\RecruitmentTask.Domain.csproj" />
+    <ProjectReference Include="..\RecruitmentTest.Application\RecruitmentTest.Application.csproj" />
+  </ItemGroup>
+
 </Project>

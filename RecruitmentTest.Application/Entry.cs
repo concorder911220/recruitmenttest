@@ -8,7 +8,7 @@ public static class Entry
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddTransient<AuthService>();
-        services.AddTransient<MarketAssetsService>();
+        services.AddTransient<FintachartsApiService>();
         return services;
     }
 }

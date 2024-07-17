@@ -9,24 +9,24 @@ namespace RecruitmentTest.Api.Controllers;
 [ApiController]
 public class ApiController : ControllerBase
 {
-    private readonly MarketAssetsService _marketAssetsService;
+    private readonly FintachartsApiService _fintachartsApiService;
 
-    public ApiController(MarketAssetsService marketAssetsService)
+    public ApiController(FintachartsApiService fintachartsApiService)
     {
-        _marketAssetsService = marketAssetsService;
+        _fintachartsApiService = fintachartsApiService;
     }
 
     [HttpGet("kinds")]
     public async Task<IResult> GetKinds()
     {
-        var response = await _marketAssetsService.GetKindsAsync();
+        var response = await _fintachartsApiService.GetKindsAsync();
         return Results.Json(response);
     }
     
     [HttpGet("providers")]
     public async Task<IResult> GetProviders()
     {
-        var response = await _marketAssetsService.GetProvidersAsync();
+        var response = await _fintachartsApiService.GetProvidersAsync();
         return Results.Json(response);
     }
     
@@ -40,11 +40,10 @@ public class ApiController : ControllerBase
         [DefaultValue("forex")]
         [Required] string kind, 
         [FromQuery] string? symbol,
-        [FromQuery] int? page,
-        [FromQuery] int? size
+        [FromQuery] int? page
     )
     {
-        var response = await _marketAssetsService.GetInstrumentsAsync(provider, kind, symbol, page, size);
+        var response = await _fintachartsApiService.GetInstrumentsAsync(provider, kind, symbol, page);
         return Results.Json(response);
     }
 
@@ -72,7 +71,7 @@ public class ApiController : ControllerBase
         int barsCount
     )
     {
-        var response = await _marketAssetsService.GetCountBackAsync(instrumentId, provider, interval, periodicity, barsCount);
+        var response = await _fintachartsApiService.GetCountBackAsync(instrumentId, provider, interval, periodicity, barsCount);
         return Results.Json(response);
     }
 
@@ -87,7 +86,7 @@ public class ApiController : ControllerBase
         [Required]
         string provider, 
         [FromQuery]
-        [DefaultValue(30)]
+        [DefaultValue(1)]
         [Required]
         int interval, 
         [FromQuery]
@@ -95,14 +94,14 @@ public class ApiController : ControllerBase
         [Required]
         string periodicity, 
         [FromQuery]
-        [DefaultValue("2024-07-16")]
+        [DefaultValue("2024-07-07")]
         [Required]
         string startDate,
         [FromQuery]
         string? endDate
     )
     {
-        var response = await _marketAssetsService.GetDateRangeAsync(instrumentId, provider, interval, periodicity, startDate, endDate);
+        var response = await _fintachartsApiService.GetDateRangeAsync(instrumentId, provider, interval, periodicity, startDate, endDate);
         return Results.Json(response);
     }
 }
