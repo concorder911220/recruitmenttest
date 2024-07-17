@@ -50,12 +50,36 @@ public class MarketAssetsService
         return providers!;
     }
 
-    public async Task<InstrumentsListResponse> GetInstrumentsAsync(string provider, string kind)
+    public async Task<InstrumentsListResponse> GetInstrumentsAsync(string provider, string kind, string? symbol, int? page, int? size)
     {
         var credentials = await _authService.GetCredentialsAsync();
-        
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get,
-            $"{_options.Value.URI}/api/instruments/v1/instruments?provider={provider}&kind={kind}");
+
+        var queryParams = new List<string>
+            {
+                $"provider={provider}",
+                $"kind={kind}"
+            };
+
+        if (!string.IsNullOrEmpty(symbol))
+        {
+            queryParams.Add($"symbol={symbol}");
+        }
+
+        if (page.HasValue)
+        {
+            queryParams.Add($"page={page.Value}");
+        }
+
+        if (size.HasValue)
+        {
+            queryParams.Add($"size={size.Value}");
+        }
+
+        var queryString = string.Join("&", queryParams);
+        var requestUri = $"{_options.Value.URI}/api/instruments/v1/instruments?{queryString}";
+
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
+
 
         httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credentials.AccessToken);
         
