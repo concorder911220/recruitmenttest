@@ -27,7 +27,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 
-var dbContext = app.Services.GetRequiredService<AppDbContext>();
+//var dbContext = app.Services.GetRequiredService<AppDbContext>();
 
 
 app.Run();

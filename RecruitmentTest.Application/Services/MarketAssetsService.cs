@@ -1,7 +1,8 @@
-﻿using System.Net.Http.Headers;
+﻿using System.ComponentModel;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
+using RecruitmentTest.Application.Responses;
 using RecruitmentTest.Common;
 
 namespace RecruitmentTest.Application.Services;
@@ -63,7 +64,37 @@ public class MarketAssetsService
 
         return instruments!;
     }
-    
+
+    public async Task<CountBackListResponse> GetCountBackAsync(string instrumentId, string provider, int interval, string periodicity, int barsCount)
+    {
+        var credentials = await _authService.GetCredentialsAsync();
+
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get,
+            $"{_options.Value.URI}/api/bars/v1/bars/count-back?instrumentId={instrumentId}&provider={provider}&interval={interval}&periodicity={periodicity}&barsCount={barsCount}");
+
+        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credentials.AccessToken);
+
+        var response = await SendRequestAsync(httpRequestMessage);
+        var countBack = await response.Content.ReadFromJsonAsync<CountBackListResponse>();
+
+        return countBack!;
+    }
+
+    public async Task<CountBackListResponse> GetDateRangeAsync(string instrumentId, string provider, int interval, string periodicity, string startDate)
+    {
+        var credentials = await _authService.GetCredentialsAsync();
+
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get,
+            $"{_options.Value.URI}/api/bars/v1/bars/date-range?instrumentId={instrumentId}&provider={provider}&interval={interval}&periodicity={periodicity}&startDate={startDate}");
+
+        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credentials.AccessToken);
+
+        var response = await SendRequestAsync(httpRequestMessage);
+        var dateRange = await response.Content.ReadFromJsonAsync<CountBackListResponse>();
+
+        return dateRange!;
+    }
+
     private async Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage httpRequestMessage)
     {
         using var client = _httpClientFactory.CreateClient();
@@ -71,38 +102,6 @@ public class MarketAssetsService
         response.EnsureSuccessStatusCode();
         return response;
     }
-}
 
-public class KindsListResponse
-{
-    public List<string>? Data { get; set; }
-}
 
-public class ProvidersListResponse
-{
-    public List<string>? Data { get; set; }
-}
-
-public class InstrumentsListResponse
-{
-    public List<InstrumentResponse>? Data { get; set; }
-}
-
-public class InstrumentResponse
-{
-    public Guid Id { get; set; }
-    public string? Symbol { get; set; }
-    public string? Kind { get; set; }
-    public string? Description { get; set; }
-    public double TickSize { get; set; }
-    public string? Currency { get; set; }
-    public string? BaseCurrency { get; set; }
-    public Dictionary<string, MappingResponse>? Mappings { get; set; }
-}
-
-public class MappingResponse
-{
-    public string? Symbol { get; set; }
-    public string? Exchange { get; set; }
-    public int? DefaultOrderSize { get; set; }
 }
